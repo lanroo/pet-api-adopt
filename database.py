@@ -12,11 +12,9 @@ DATABASE_URL = os.getenv(
 )
 
 if "vercel" in DATABASE_URL or os.getenv("VERCEL"):
-    # No Vercel, usar um arquivo temporário para persistência
-    temp_dir = tempfile.gettempdir()
-    db_path = os.path.join(temp_dir, "pet_adoption.db")
-    DATABASE_URL = f"sqlite:///{db_path}"
-    print(f"🔧 Vercel: Usando banco em {db_path}")
+    # No Vercel, usar banco em memória
+    DATABASE_URL = "sqlite:///:memory:"
+    print("🔧 Vercel: Usando banco em memória")
 
 # Adicionar parâmetros para resolver problemas de thread-safety
 if "vercel" in DATABASE_URL or os.getenv("VERCEL"):
