@@ -4,17 +4,17 @@
 
 ### 🌐 URL Base da API:
 ```javascript
-const API_BASE_URL = 'https://pet-adoption-cw31c6uqt-lanroos-projects.vercel.app';
+const API_BASE_URL = 'https://pet-api-adoptt.vercel.app';
 ```
 
 ### 📚 Documentação Swagger:
 ```
-https://pet-adoption-cw31c6uqt-lanroos-projects.vercel.app/docs
+https://pet-api-adoptt.vercel.app/docs
 ```
 
 ### 🔍 Health Check:
 ```
-https://pet-adoption-cw31c6uqt-lanroos-projects.vercel.app/health
+https://pet-api-adoptt.vercel.app/health
 ```
 
 ---
@@ -149,7 +149,7 @@ Content-Type: application/json
 ### React/JavaScript (Fetch)
 
 ```javascript
-const API_BASE_URL = 'https://pet-adoption-cw31c6uqt-lanroos-projects.vercel.app';
+const API_BASE_URL = 'https://pet-api-adoptt.vercel.app';
 
 // Listar pets
 const fetchPets = async () => {
@@ -212,7 +212,7 @@ const getStats = async () => {
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://pet-adoption-cw31c6uqt-lanroos-projects.vercel.app'
+  baseURL: 'https://pet-api-adoptt.vercel.app'
 });
 
 // Listar pets
@@ -352,9 +352,9 @@ const handleApiError = (error) => {
 
 ## 🚀 Links Úteis
 
-- **API**: https://pet-adoption-cw31c6uqt-lanroos-projects.vercel.app
-- **Swagger**: https://pet-adoption-cw31c6uqt-lanroos-projects.vercel.app/docs
-- **Health Check**: https://pet-adoption-cw31c6uqt-lanroos-projects.vercel.app/health
+- **API**: https://pet-api-adoptt.vercel.app
+- **Swagger**: https://pet-api-adoptt.vercel.app/docs
+- **Health Check**: https://pet-api-adoptt.vercel.app/health
 - **GitHub**: https://github.com/lanroo/pet-api-adopt.git
 
 ---

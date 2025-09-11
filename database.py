@@ -42,8 +42,10 @@ def init_db():
     
     db = SessionLocal()
     try:
-        if db.query(User).count() > 0:
-            print("✅ Banco já tem dados!")
+        # Verificar se já existem pets (mais confiável que users)
+        existing_pets = db.query(Pet).count()
+        if existing_pets > 0:
+            print(f"✅ Banco já tem {existing_pets} pets!")
             return
         
         user1 = User(
