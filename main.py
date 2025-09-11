@@ -10,7 +10,10 @@ from datetime import datetime
 
 from database import get_db, init_db
 from models import Pet, User, Base
-from schemas import PetCreate, PetUpdate, UserCreate, UserUpdate, AdoptRequest
+from schemas import PetCreate, PetUpdate, UserCreate, UserUpdate, AdoptRequest, PetResponse, PetFilter
+from utils import get_species_label, get_gender_label, get_status_label
+from app_types import GenderEnum, SpeciesEnum, StatusEnum
+from app_types.constants import UPLOAD_DIR, MAX_PAGE_SIZE, MIN_PAGE_SIZE
 
 app = FastAPI(
     title="Pet Adoption API",
@@ -47,7 +50,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @app.on_event("startup")
@@ -81,43 +83,52 @@ async def health_check():
     """
     return {"status": "healthy", "timestamp": datetime.utcnow()}
 
-@app.get("/pets", tags=["Pets"])
+@app.get("/pets", response_model=List[PetResponse], tags=["Pets"])
 async def list_pets(
-    db: Session = Depends(get_db),
-    species: Optional[str] = Query(None, description="Filtrar por espécie (dog, cat)"),
+    species: Optional[SpeciesEnum] = Query(None, description="Filtrar por espécie"),
+    gender: Optional[GenderEnum] = Query(None, description="Filtrar por gênero"),
     city: Optional[str] = Query(None, description="Filtrar por cidade"),
-    status: Optional[str] = Query(None, description="Filtrar por status (available, adopted)"),
-    page: int = Query(1, ge=1, description="Número da página"),
-    limit: int = Query(10, ge=1, le=100, description="Itens por página")
+    status: Optional[StatusEnum] = Query(None, description="Filtrar por status"),
+    min_age: Optional[float] = Query(None, description="Idade mínima em meses"),
+    max_age: Optional[float] = Query(None, description="Idade máxima em meses"),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(MAX_PAGE_SIZE, ge=MIN_PAGE_SIZE, le=MAX_PAGE_SIZE),
+    db: Session = Depends(get_db)
 ):
     """
-    Listar todos os pets com filtros opcionais
+    Buscar pets com filtros opcionais
     
     - **species**: dog, cat
+    - **gender**: male, female
     - **city**: qualquer cidade
-    - **status**: available, adopted
-    - **page**: paginação (começa em 1)
+    - **status**: available, adopted, pending
+    - **min_age**: idade mínima em meses
+    - **max_age**: idade máxima em meses
+    - **skip**: número de registros para pular
     - **limit**: máximo 100 itens por página
     """
     query = db.query(Pet)
     
     if species:
         query = query.filter(Pet.species == species)
+    
+    if gender:
+        query = query.filter(Pet.gender == gender)
+    
     if city:
         query = query.filter(Pet.city.ilike(f"%{city}%"))
+    
     if status:
         query = query.filter(Pet.status == status)
     
-    total = query.count()
-    offset = (page - 1) * limit
-    pets = query.offset(offset).limit(limit).all()
+    if min_age is not None:
+        query = query.filter(Pet.age >= min_age)
     
-    return {
-        "pets": pets,
-        "total": total,
-        "page": page,
-        "limit": limit
-    }
+    if max_age is not None:
+        query = query.filter(Pet.age <= max_age)
+    
+    pets = query.offset(skip).limit(limit).all()
+    return pets
 
 @app.get("/pets/stats", tags=["Estatísticas"])
 async def get_stats(db: Session = Depends(get_db)):
@@ -151,18 +162,20 @@ async def search_pets(q: str, db: Session = Depends(get_db)):
     ).all()
     return {"pets": pets, "query": q}
 
-@app.get("/pets/{pet_id}", tags=["Pets"])
+@app.get("/pets/{pet_id}", response_model=PetResponse, tags=["Pets"])
 async def get_pet(pet_id: int, db: Session = Depends(get_db)):
-    
+    """
+    Buscar pet por ID
+    """
     pet = db.query(Pet).filter(Pet.id == pet_id).first()
     if not pet:
         raise HTTPException(status_code=404, detail="Pet não encontrado")
     return pet
 
-@app.post("/pets", status_code=201, tags=["Pets"])
+@app.post("/pets", response_model=PetResponse, status_code=201, tags=["Pets"])
 async def create_pet(pet_data: PetCreate, db: Session = Depends(get_db)):
     """
-    Cadastrar um novo pet
+    Criar novo pet
     
     Exemplo de dados:
     ```json
@@ -177,39 +190,41 @@ async def create_pet(pet_data: PetCreate, db: Session = Depends(get_db)):
     }
     ```
     """
-    pet_dict = pet_data.dict()
-    pet = Pet(**pet_dict)
-    pet.created_at = datetime.utcnow()
-    pet.updated_at = datetime.utcnow()
-    
+    pet = Pet(**pet_data.model_dump())
     db.add(pet)
     db.commit()
     db.refresh(pet)
     return pet
 
-@app.put("/pets/{pet_id}", tags=["Pets"])
-async def update_pet(pet_id: int, pet_update: PetUpdate, db: Session = Depends(get_db)):
+@app.put("/pets/{pet_id}", response_model=PetResponse, tags=["Pets"])
+async def update_pet(pet_id: int, pet_data: PetUpdate, db: Session = Depends(get_db)):
+    """
+    Atualizar pet existente
+    """
     pet = db.query(Pet).filter(Pet.id == pet_id).first()
     if not pet:
         raise HTTPException(status_code=404, detail="Pet não encontrado")
     
-    update_data = pet_update.dict(exclude_unset=True)
-    for key, value in update_data.items():
-        setattr(pet, key, value)
+    update_data = pet_data.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(pet, field, value)
     
-    pet.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(pet)
     return pet
 
-@app.delete("/pets/{pet_id}", status_code=204, tags=["Pets"])
+@app.delete("/pets/{pet_id}", tags=["Pets"])
 async def delete_pet(pet_id: int, db: Session = Depends(get_db)):
+    """
+    Deletar pet
+    """
     pet = db.query(Pet).filter(Pet.id == pet_id).first()
     if not pet:
         raise HTTPException(status_code=404, detail="Pet não encontrado")
     
     db.delete(pet)
     db.commit()
+    return {"message": "Pet deletado com sucesso"}
 
 
 @app.post("/pets/{pet_id}/adopt", tags=["Adoção"])
@@ -320,6 +335,21 @@ async def upload_pet_photos(
         "pet_id": pet_id,
         "uploaded_files": uploaded_files,
         "total_photos": len(pet.photos)
+    }
+
+@app.get("/pets/filters/options", tags=["Pets"])
+async def get_filter_options(db: Session = Depends(get_db)):
+    """
+    Obter opções disponíveis para filtros
+    """
+    cities = db.query(Pet.city).distinct().filter(Pet.city.isnot(None)).all()
+    cities = [city[0] for city in cities if city[0]]
+    
+    return {
+        "species": [{"value": species.value, "label": get_species_label(species)} for species in SpeciesEnum],
+        "genders": [{"value": gender.value, "label": get_gender_label(gender)} for gender in GenderEnum],
+        "cities": sorted(cities),
+        "status": [{"value": status.value, "label": get_status_label(status)} for status in StatusEnum]
     }
 
 @app.get("/uploads/{filename}", tags=["Arquivos"])

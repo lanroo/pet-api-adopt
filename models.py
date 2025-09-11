@@ -1,26 +1,27 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text, JSON, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Text, JSON, DateTime, Enum, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from sqlalchemy.sql import func
+
+from app_types import GenderEnum, SpeciesEnum, StatusEnum
 
 Base = declarative_base()
 
 class Pet(Base):
     __tablename__ = "pets"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
-    species = Column(String(50), nullable=False)  
-    breed = Column(String(100), nullable=False)
-    age = Column(Integer, nullable=False)  
-    gender = Column(String(10), nullable=False) 
-    status = Column(String(20), default="available")  
-    city = Column(String(100), nullable=False)
-    photos = Column(JSON, default=[])
+    species = Column(Enum(SpeciesEnum), nullable=False)
+    breed = Column(String(100))
+    age = Column(Float)  # em meses
+    gender = Column(Enum(GenderEnum), nullable=False)
+    city = Column(String(100))
     description = Column(Text)
-    
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow)
+    photos = Column(JSON)  # Lista de URLs das fotos
+    status = Column(Enum(StatusEnum), default=StatusEnum.AVAILABLE)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     adopted_at = Column(DateTime, nullable=True)
     adopted_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     
@@ -28,12 +29,12 @@ class Pet(Base):
 
 class User(Base):
     __tablename__ = "users"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     full_name = Column(String(200), nullable=False)
-    email = Column(String(255), unique=True, nullable=False)
-    phone = Column(String(20), nullable=False)
-    city = Column(String(100), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    phone = Column(String(20))
+    city = Column(String(100))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     adopted_pets = relationship("Pet", back_populates="adopter")
