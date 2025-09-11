@@ -53,67 +53,67 @@ def init_db():
         dog_breeds = ["Golden Retriever", "Pastor Alemão", "Labrador", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Husky", "Dachshund", "Boxer", "Chihuahua", "Shih Tzu", "Border Collie", "Doberman", "Maltês"]
         cat_breeds = ["Persa", "Siamês", "Maine Coon", "Ragdoll", "British Shorthair", "Abissínio", "Birmanês", "Sphynx", "Scottish Fold", "Angorá", "Bombay", "Manx", "Oriental", "Siberiano", "Devon Rex"]
         
-        dog_names = ["Luna", "Max", "Bella", "Thor", "Lola", "Zeus", "Maya", "Apollo", "Nala", "Rocky", "Sofia", "Bruno", "Rex", "Mia", "Charlie"]
-        dog_photos = [
-            "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop"
+        # Cães com nomes e fotos específicas
+        dogs_data = [
+            {"name": "Luna", "breed": "Golden Retriever", "photo": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=300&fit=crop"},
+            {"name": "Max", "breed": "Pastor Alemão", "photo": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=300&fit=crop"},
+            {"name": "Bella", "breed": "Labrador", "photo": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&h=300&fit=crop"},
+            {"name": "Thor", "breed": "Bulldog", "photo": "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop"},
+            {"name": "Lola", "breed": "Poodle", "photo": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop"},
+            {"name": "Zeus", "breed": "Beagle", "photo": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop"},
+            {"name": "Maya", "breed": "Rottweiler", "photo": "https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop"},
+            {"name": "Apollo", "breed": "Husky", "photo": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop"},
+            {"name": "Nala", "breed": "Dachshund", "photo": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&h=300&fit=crop"},
+            {"name": "Rocky", "breed": "Boxer", "photo": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=300&fit=crop"},
+            {"name": "Sofia", "breed": "Chihuahua", "photo": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=300&fit=crop"},
+            {"name": "Bruno", "breed": "Shih Tzu", "photo": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop"},
+            {"name": "Rex", "breed": "Border Collie", "photo": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop"},
+            {"name": "Mia", "breed": "Doberman", "photo": "https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop"},
+            {"name": "Charlie", "breed": "Maltês", "photo": "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop"}
         ]
         
-        for i in range(15):
+        for i, dog in enumerate(dogs_data):
             pet = Pet(
-                name=dog_names[i],
+                name=dog["name"],
                 species="dog",
-                breed=dog_breeds[i],
+                breed=dog["breed"],
                 age=12 + (i * 2),
                 gender="female" if i % 2 == 0 else "male",
                 city=cities[i % len(cities)],
-                description=f"Cachorro {dog_breeds[i].lower()} muito carinhoso e brincalhão",
-                photos=[dog_photos[i]]  # Usar URLs de imagens reais
+                description=f"Cachorro {dog['breed'].lower()} muito carinhoso e brincalhão",
+                photos=[dog["photo"]]  # Foto específica para cada pet
             )
             db.add(pet)
         
-        cat_names = ["Mimi", "Simba", "Luna", "Felix", "Bella", "Garfield", "Nala", "Tom", "Maya", "Whiskers", "Sofia", "Shadow", "Lola", "Tiger", "Mia"]
-        cat_photos = [
-            "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1513245543132-31f507417b26?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1513245543132-31f507417b26?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop"
+        # Gatos com nomes e fotos específicas
+        cats_data = [
+            {"name": "Mimi", "breed": "Persa", "photo": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop"},
+            {"name": "Simba", "breed": "Siamês", "photo": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop"},
+            {"name": "Luna", "breed": "Maine Coon", "photo": "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop"},
+            {"name": "Felix", "breed": "Ragdoll", "photo": "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop"},
+            {"name": "Bella", "breed": "British Shorthair", "photo": "https://images.unsplash.com/photo-1513245543132-31f507417b26?w=400&h=300&fit=crop"},
+            {"name": "Garfield", "breed": "Abissínio", "photo": "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400&h=300&fit=crop"},
+            {"name": "Nala", "breed": "Birmanês", "photo": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop"},
+            {"name": "Tom", "breed": "Sphynx", "photo": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop"},
+            {"name": "Maya", "breed": "Scottish Fold", "photo": "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop"},
+            {"name": "Whiskers", "breed": "Angorá", "photo": "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop"},
+            {"name": "Sofia", "breed": "Bombay", "photo": "https://images.unsplash.com/photo-1513245543132-31f507417b26?w=400&h=300&fit=crop"},
+            {"name": "Shadow", "breed": "Manx", "photo": "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400&h=300&fit=crop"},
+            {"name": "Lola", "breed": "Oriental", "photo": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop"},
+            {"name": "Tiger", "breed": "Siberiano", "photo": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop"},
+            {"name": "Mia", "breed": "Devon Rex", "photo": "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop"}
         ]
         
-        for i in range(15):
+        for i, cat in enumerate(cats_data):
             pet = Pet(
-                name=cat_names[i],
+                name=cat["name"],
                 species="cat",
-                breed=cat_breeds[i],
+                breed=cat["breed"],
                 age=8 + (i * 1.5),
                 gender="male" if i % 2 == 0 else "female",
                 city=cities[(i + 5) % len(cities)],
-                description=f"Gato {cat_breeds[i].lower()} muito dócil e independente",
-                photos=[cat_photos[i]]  # Usar URLs de imagens reais
+                description=f"Gato {cat['breed'].lower()} muito dócil e independente",
+                photos=[cat["photo"]]  # Foto específica para cada pet
             )
             db.add(pet)
         
