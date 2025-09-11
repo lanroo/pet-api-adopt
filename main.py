@@ -59,15 +59,6 @@ async def startup_event():
     except Exception as e:
         print(f"❌ Erro ao inicializar banco: {e}")
 
-# Função para garantir que o banco esteja inicializado
-def ensure_db_initialized():
-    """Garantir que o banco esteja inicializado"""
-    try:
-        from database import engine
-        from models import Base
-        Base.metadata.create_all(bind=engine)
-    except Exception as e:
-        print(f"❌ Erro ao garantir inicialização do banco: {e}")
 
 @app.get("/", tags=["Sistema"])
 async def root():
@@ -108,9 +99,6 @@ async def list_pets(
     - **page**: paginação (começa em 1)
     - **limit**: máximo 100 itens por página
     """
-    # Garantir que o banco esteja inicializado
-    ensure_db_initialized()
-    
     query = db.query(Pet)
     
     if species:
