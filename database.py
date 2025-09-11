@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv(
+DATABASE_URL = os.getenv( 
     "DATABASE_URL",
     "sqlite:///./pet_adoption.db"
 )
@@ -27,7 +27,13 @@ def init_db():
     from models import Base, Pet, User
     from datetime import datetime
     
-    Base.metadata.create_all(bind=engine)
+    try:
+        # Criar tabelas
+        Base.metadata.create_all(bind=engine)
+        print("✅ Tabelas criadas com sucesso!")
+    except Exception as e:
+        print(f"❌ Erro ao criar tabelas: {e}")
+        return
     
     db = SessionLocal()
     try:
@@ -58,7 +64,7 @@ def init_db():
         dog_breeds = ["Golden Retriever", "Pastor Alemão", "Labrador", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Husky", "Dachshund", "Boxer", "Chihuahua", "Shih Tzu", "Border Collie", "Doberman", "Maltês"]
         cat_breeds = ["Persa", "Siamês", "Maine Coon", "Ragdoll", "British Shorthair", "Abissínio", "Birmanês", "Sphynx", "Scottish Fold", "Angorá", "Bombay", "Manx", "Oriental", "Siberiano", "Devon Rex"]
         
-        
+
         dog_names = ["Luna", "Max", "Bella", "Thor", "Lola", "Zeus", "Maya", "Apollo", "Nala", "Rocky", "Sofia", "Bruno", "Rex", "Mia", "Charlie"]
         for i in range(15):
             pet = Pet(

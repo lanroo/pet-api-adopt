@@ -8,7 +8,7 @@ import uuid
 import shutil
 from datetime import datetime
 
-from database import get_db
+from database import get_db, init_db
 from models import Pet, User, Base
 from schemas import PetCreate, PetUpdate, UserCreate, UserUpdate, AdoptRequest
 
@@ -49,6 +49,15 @@ app.add_middleware(
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@app.on_event("startup")
+async def startup_event():
+    """Inicializar banco de dados na startup"""
+    try:
+        init_db()
+        print("✅ Banco de dados inicializado com sucesso!")
+    except Exception as e:
+        print(f"❌ Erro ao inicializar banco: {e}")
 
 @app.get("/health", tags=["Sistema"])
 async def health_check():
