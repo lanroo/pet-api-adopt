@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import os
+import tempfile
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,9 +12,13 @@ DATABASE_URL = os.getenv(
 )
 
 if "vercel" in DATABASE_URL or os.getenv("VERCEL"):
-    DATABASE_URL = "sqlite:///:memory:"
+    # No Vercel, usar um arquivo temporário para persistência
+    temp_dir = tempfile.gettempdir()
+    db_path = os.path.join(temp_dir, "pet_adoption.db")
+    DATABASE_URL = f"sqlite:///{db_path}"
 
-engine = create_engine(DATABASE_URL)
+# Adicionar parâmetros para resolver problemas de thread-safety
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
