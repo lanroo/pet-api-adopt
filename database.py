@@ -16,9 +16,20 @@ if "vercel" in DATABASE_URL or os.getenv("VERCEL"):
     temp_dir = tempfile.gettempdir()
     db_path = os.path.join(temp_dir, "pet_adoption.db")
     DATABASE_URL = f"sqlite:///{db_path}"
+    print(f"🔧 Vercel: Usando banco em {db_path}")
 
 # Adicionar parâmetros para resolver problemas de thread-safety
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+if "vercel" in DATABASE_URL or os.getenv("VERCEL"):
+    # Configurações específicas para Vercel
+    engine = create_engine(
+        DATABASE_URL, 
+        connect_args={"check_same_thread": False},
+        pool_pre_ping=True,
+        echo=False
+    )
+else:
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
@@ -47,6 +58,8 @@ def init_db():
         if existing_pets > 0:
             print(f"✅ Banco já tem {existing_pets} pets!")
             return
+        
+        print("🔧 Criando dados iniciais...")
         
         user1 = User(
             full_name="João Silva",
