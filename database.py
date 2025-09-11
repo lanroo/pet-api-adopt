@@ -66,7 +66,7 @@ def init_db():
             {"name": "Sofia", "photo": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=300&fit=crop"},
             {"name": "Bruno", "photo": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop"},
             {"name": "Rex", "photo": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop"},
-            {"name": "Mia", "photo": "https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop"},
+            {"name": "Karen", "photo": "https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop"},
             {"name": "Charlie", "photo": "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop"}
         ]
         
@@ -74,12 +74,12 @@ def init_db():
             pet = Pet(
                 name=dog["name"],
                 species="dog",
-                breed="Cachorro",  # Raça genérica
+                breed="Cachorro",  
                 age=12 + (i * 2),
                 gender="female" if i % 2 == 0 else "male",
                 city=cities[i % len(cities)],
                 description=f"Cachorro muito carinhoso e brincalhão",
-                photos=[dog["photo"]]  # Foto específica para cada pet
+                photos=[dog["photo"]] 
             )
             db.add(pet)
         
@@ -87,19 +87,19 @@ def init_db():
         cats_data = [
             {"name": "Mimi", "photo": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop"},
             {"name": "Simba", "photo": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop"},
-            {"name": "LunaCat", "photo": "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop"},
+            {"name": "Carminha", "photo": "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop"},
             {"name": "Felix", "photo": "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop"},
             {"name": "BellaCat", "photo": "https://images.unsplash.com/photo-1513245543132-31f507417b26?w=400&h=300&fit=crop"},
             {"name": "Garfield", "photo": "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400&h=300&fit=crop"},
             {"name": "NalaCat", "photo": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop"},
-            {"name": "Tom", "photo": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop"},
+            {"name": "Pink", "photo": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop"},
             {"name": "MayaCat", "photo": "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop"},
             {"name": "Whiskers", "photo": "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop"},
-            {"name": "SofiaCat", "photo": "https://images.unsplash.com/photo-1513245543132-31f507417b26?w=400&h=300&fit=crop"},
+            {"name": "Laly", "photo": "https://images.unsplash.com/photo-1513245543132-31f507417b26?w=400&h=300&fit=crop"},
             {"name": "Shadow", "photo": "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400&h=300&fit=crop"},
-            {"name": "LolaCat", "photo": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop"},
+            {"name": "Brina", "photo": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop"},
             {"name": "Tiger", "photo": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop"},
-            {"name": "MiaCat", "photo": "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop"}
+            {"name": "Mia", "photo": "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop"}
         ]
         
         for i, cat in enumerate(cats_data):
