@@ -54,6 +54,24 @@ def init_db():
         cat_breeds = ["Persa", "Siamês", "Maine Coon", "Ragdoll", "British Shorthair", "Abissínio", "Birmanês", "Sphynx", "Scottish Fold", "Angorá", "Bombay", "Manx", "Oriental", "Siberiano", "Devon Rex"]
         
         dog_names = ["Luna", "Max", "Bella", "Thor", "Lola", "Zeus", "Maya", "Apollo", "Nala", "Rocky", "Sofia", "Bruno", "Rex", "Mia", "Charlie"]
+        dog_photos = [
+            "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop"
+        ]
+        
         for i in range(15):
             pet = Pet(
                 name=dog_names[i],
@@ -63,11 +81,29 @@ def init_db():
                 gender="female" if i % 2 == 0 else "male",
                 city=cities[i % len(cities)],
                 description=f"Cachorro {dog_breeds[i].lower()} muito carinhoso e brincalhão",
-                photos=[f"dog_{i+1}.jpg"]  # Adicionar foto de exemplo
+                photos=[dog_photos[i]]  # Usar URLs de imagens reais
             )
             db.add(pet)
         
         cat_names = ["Mimi", "Simba", "Luna", "Felix", "Bella", "Garfield", "Nala", "Tom", "Maya", "Whiskers", "Sofia", "Shadow", "Lola", "Tiger", "Mia"]
+        cat_photos = [
+            "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1513245543132-31f507417b26?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1513245543132-31f507417b26?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=300&fit=crop"
+        ]
+        
         for i in range(15):
             pet = Pet(
                 name=cat_names[i],
@@ -77,7 +113,7 @@ def init_db():
                 gender="male" if i % 2 == 0 else "female",
                 city=cities[(i + 5) % len(cities)],
                 description=f"Gato {cat_breeds[i].lower()} muito dócil e independente",
-                photos=[f"cat_{i+1}.jpg"]  # Adicionar foto de exemplo
+                photos=[cat_photos[i]]  # Usar URLs de imagens reais
             )
             db.add(pet)
         
