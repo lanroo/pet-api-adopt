@@ -13,6 +13,6 @@
     }
   ],
   "env": {
-    "DATABASE_URL": "sqlite:///./pet_adoption.db"
+    "DATABASE_URL": "sqlite:///:memory:"
   }
 }

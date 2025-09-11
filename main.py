@@ -59,6 +59,20 @@ async def startup_event():
     except Exception as e:
         print(f"❌ Erro ao inicializar banco: {e}")
 
+@app.get("/", tags=["Sistema"])
+async def root():
+    """
+    Página inicial da API
+    """
+    return {
+        "message": "Pet Adoption API",
+        "version": "1.0.0",
+        "docs": "/docs",
+        "health": "/health",
+        "pets": "/pets",
+        "users": "/users"
+    }
+
 @app.get("/health", tags=["Sistema"])
 async def health_check():
     """
