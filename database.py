@@ -62,7 +62,8 @@ def init_db():
                 age=12 + (i * 2),
                 gender="female" if i % 2 == 0 else "male",
                 city=cities[i % len(cities)],
-                description=f"Cachorro {dog_breeds[i].lower()} muito carinhoso e brincalhão"
+                description=f"Cachorro {dog_breeds[i].lower()} muito carinhoso e brincalhão",
+                photos=[f"dog_{i+1}.jpg"]  # Adicionar foto de exemplo
             )
             db.add(pet)
         
@@ -75,7 +76,8 @@ def init_db():
                 age=8 + (i * 1.5),
                 gender="male" if i % 2 == 0 else "female",
                 city=cities[(i + 5) % len(cities)],
-                description=f"Gato {cat_breeds[i].lower()} muito dócil e independente"
+                description=f"Gato {cat_breeds[i].lower()} muito dócil e independente",
+                photos=[f"cat_{i+1}.jpg"]  # Adicionar foto de exemplo
             )
             db.add(pet)
         

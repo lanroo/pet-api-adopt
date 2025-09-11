@@ -275,6 +275,66 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return user
 
+@app.post("/pets/{pet_id}/photos", tags=["Pets"])
+async def upload_pet_photos(
+    pet_id: int,
+    files: List[UploadFile] = File(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Upload fotos para um pet específico
+    """
+    pet = db.query(Pet).filter(Pet.id == pet_id).first()
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet não encontrado")
+    
+    uploaded_files = []
+    
+    for file in files:
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail=f"Arquivo {file.filename} não é uma imagem")
+        
+        # Gerar nome único para o arquivo
+        file_extension = file.filename.split(".")[-1]
+        unique_filename = f"{uuid.uuid4()}.{file_extension}"
+        file_path = os.path.join(UPLOAD_DIR, unique_filename)
+        
+        # Salvar arquivo
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        uploaded_files.append(unique_filename)
+    
+    # Atualizar lista de fotos do pet
+    if pet.photos is None:
+        pet.photos = []
+    
+    pet.photos.extend(uploaded_files)
+    pet.updated_at = datetime.utcnow()
+    
+    db.commit()
+    db.refresh(pet)
+    
+    return {
+        "message": f"{len(uploaded_files)} foto(s) enviada(s) com sucesso",
+        "pet_id": pet_id,
+        "uploaded_files": uploaded_files,
+        "total_photos": len(pet.photos)
+    }
+
+@app.get("/uploads/{filename}", tags=["Arquivos"])
+async def get_uploaded_file(filename: str):
+    """
+    Servir arquivos de upload (fotos dos pets)
+    """
+    file_path = os.path.join(UPLOAD_DIR, filename)
+    
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Arquivo não encontrado")
+    
+    from fastapi.responses import FileResponse
+    return FileResponse(file_path)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
