@@ -29,18 +29,30 @@ def init_db():
             full_name="João Silva",
             email="joao@email.com",
             phone="11999999999",
-            city="São Paulo"
+            city="São Paulo",
+            password=get_password_hash("senha123")
         )
         
         user2 = User(
             full_name="Maria Santos",
             email="maria@email.com",
             phone="21999999999",
-            city="Rio de Janeiro"
+            city="Rio de Janeiro",
+            password=get_password_hash("senha123")
+        )
+        
+        # Usuário admin
+        admin_user = User(
+            full_name="Admin",
+            email="yladacz@gmail.com",
+            phone="11999999999",
+            city="São Paulo",
+            password=get_password_hash("@Senha123")
         )
         
         db.add(user1)
         db.add(user2)
+        db.add(admin_user)
         db.commit()
         
         # Dados atualizados com gêneros corretos
