@@ -112,6 +112,37 @@ async def initialize_database():
     except Exception as e:
         return {"error": f"Erro ao inicializar banco: {str(e)}"}
 
+@app.get("/debug/db-status", tags=["Sistema"])
+async def debug_database_status():
+    """
+    Debug: Verificar status do banco de dados
+    """
+    try:
+        from models import Pet, User
+        db = next(get_db())
+        
+        pets_count = db.query(Pet).count()
+        users_count = db.query(User).count()
+        
+        # Listar usuários
+        users = db.query(User).all()
+        users_data = []
+        for user in users:
+            users_data.append({
+                "id": user.id,
+                "full_name": user.full_name,
+                "email": user.email,
+                "has_password": bool(user.password)
+            })
+        
+        return {
+            "pets_count": pets_count,
+            "users_count": users_count,
+            "users": users_data
+        }
+    except Exception as e:
+        return {"error": f"Erro ao verificar banco: {str(e)}"}
+
 @app.get("/pets", response_model=List[PetResponse], tags=["Pets"])
 async def list_pets(
     species: Optional[SpeciesEnum] = Query(None, description="Filtrar por espécie"),
