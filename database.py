@@ -22,7 +22,8 @@ def init_db():
     
     db = SessionLocal()
     try:
-        if db.query(Pet).count() > 0:
+        # Verificar se já existem dados (pets ou usuários)
+        if db.query(Pet).count() > 0 and db.query(User).count() > 0:
             return
         
         user1 = User(
