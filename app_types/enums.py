@@ -24,3 +24,11 @@ class StatusEnum(str, enum.Enum):
     AVAILABLE = "available"
     ADOPTED = "adopted"
     PENDING = "pending"
+
+
+class AdoptionStatusEnum(str, enum.Enum):
+    """Status enumeration for adoption requests"""
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    COMPLETED = "completed"
