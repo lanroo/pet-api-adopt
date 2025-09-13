@@ -9,10 +9,16 @@ import shutil
 from datetime import datetime
 
 from database import get_db, init_db
-from models import Pet, User, Base
-from schemas import PetCreate, PetUpdate, UserCreate, UserUpdate, AdoptRequest, PetResponse, PetFilter
+from models import Pet, User, Base, AdoptionRequest
+from schemas import (
+    PetCreate, PetUpdate, UserCreate, UserUpdate, AdoptRequest, PetResponse, PetFilter, PetListResponse,
+    AdoptionRequestCreate, AdoptionRequestUpdate, AdoptionRequestResponse, AdoptionRequestListResponse,
+    UserLogin, UserRegister, Token, UserProfile
+)
+from auth import verify_password, get_password_hash, create_access_token, check_dependencies
+from auth_deps import get_current_user, get_current_user_optional
 from utils import get_species_label, get_gender_label, get_status_label
-from app_types import GenderEnum, SpeciesEnum, StatusEnum
+from app_types import GenderEnum, SpeciesEnum, StatusEnum, AdoptionStatusEnum
 from app_types.constants import UPLOAD_DIR, MAX_PAGE_SIZE, MIN_PAGE_SIZE
 
 app = FastAPI(
@@ -364,6 +370,154 @@ async def get_uploaded_file(filename: str):
     
     from fastapi.responses import FileResponse
     return FileResponse(file_path)
+
+# AUTHENTICATION ENDPOINTS
+
+@app.post("/api/auth/register", response_model=UserProfile, status_code=201, tags=["Autenticação"])
+async def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
+    """
+    Registrar novo usuário
+    """
+    # Verificar se as dependências estão instaladas
+    if not check_dependencies():
+        raise HTTPException(
+            status_code=500, 
+            detail="Dependências de autenticação não instaladas. Execute: pip install passlib python-jose"
+        )
+    
+    # Verificar se email já existe
+    existing_user = db.query(User).filter(User.email == user_data.email).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=400, 
+            detail="Email já cadastrado"
+        )
+    
+    # Criar hash da senha
+    hashed_password = get_password_hash(user_data.password)
+    
+    # Criar usuário
+    user = User(
+        full_name=user_data.full_name,
+        email=user_data.email,
+        password=hashed_password,
+        phone=user_data.phone,
+        city=user_data.city
+    )
+    
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    
+    return user
+
+
+@app.post("/api/auth/login", response_model=Token, tags=["Autenticação"])
+async def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
+    """
+    Fazer login com email ou nome de usuário
+    """
+    # Verificar se as dependências estão instaladas
+    if not check_dependencies():
+        raise HTTPException(
+            status_code=500, 
+            detail="Dependências de autenticação não instaladas. Execute: pip install passlib python-jose"
+        )
+    
+    # Buscar usuário por email ou nome
+    user = db.query(User).filter(
+        (User.email == login_data.username) | 
+        (User.full_name.ilike(f"%{login_data.username}%"))
+    ).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=401, 
+            detail="Usuário ou senha incorretos"
+        )
+    
+    # Verificar senha
+    if not verify_password(login_data.password, user.password):
+        raise HTTPException(
+            status_code=401, 
+            detail="Usuário ou senha incorretos"
+        )
+    
+    # Criar token
+    access_token = create_access_token(
+        data={"sub": str(user.id), "email": user.email}
+    )
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
+
+@app.get("/user/login", tags=["Autenticação"])
+async def login_user_legacy(username: str, password: str, db: Session = Depends(get_db)):
+    """
+    Login legado - compatível com frontend atual
+    """
+    # Verificar se as dependências estão instaladas
+    if not check_dependencies():
+        raise HTTPException(
+            status_code=500, 
+            detail="Dependências de autenticação não instaladas"
+        )
+    
+    # Buscar usuário por email ou nome
+    user = db.query(User).filter(
+        (User.email == username) | 
+        (User.full_name.ilike(f"%{username}%"))
+    ).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=401, 
+            detail="Usuário ou senha incorretos"
+        )
+    
+    # Verificar senha
+    if not verify_password(password, user.password):
+        raise HTTPException(
+            status_code=401, 
+            detail="Usuário ou senha incorretos"
+        )
+    
+    # Criar token
+    access_token = create_access_token(
+        data={"sub": str(user.id), "email": user.email}
+    )
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "full_name": user.full_name,
+            "email": user.email,
+            "phone": user.phone,
+            "city": user.city
+        }
+    }
+
+
+@app.get("/api/auth/me", response_model=UserProfile, tags=["Autenticação"])
+async def get_current_user_profile(current_user: User = Depends(get_current_user)):
+    """
+    Obter dados do usuário logado
+    """
+    return current_user
+
+
+@app.post("/api/auth/logout", tags=["Autenticação"])
+async def logout_user():
+    """
+    Fazer logout (no JWT, o logout é feito no frontend removendo o token)
+    """
+    return {"message": "Logout realizado com sucesso. Remova o token do frontend."}
+
 
 if __name__ == "__main__":
     import uvicorn
