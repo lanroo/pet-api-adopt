@@ -101,6 +101,17 @@ async def health_check():
     
     return {"status": "healthy", "timestamp": datetime.utcnow()}
 
+@app.post("/init-db", tags=["Sistema"])
+async def initialize_database():
+    """
+    Inicializar banco de dados manualmente
+    """
+    try:
+        init_db()
+        return {"message": "Banco de dados inicializado com sucesso!"}
+    except Exception as e:
+        return {"error": f"Erro ao inicializar banco: {str(e)}"}
+
 @app.get("/pets", response_model=List[PetResponse], tags=["Pets"])
 async def list_pets(
     species: Optional[SpeciesEnum] = Query(None, description="Filtrar por espécie"),
