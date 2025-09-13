@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 
 from app_types.constants import DATABASE_URL
+from auth import get_password_hash
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
