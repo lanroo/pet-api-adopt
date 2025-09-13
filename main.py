@@ -58,14 +58,20 @@ app.add_middleware(
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-@app.on_event("startup")
-async def startup_event():
-    """Inicializar banco de dados na startup"""
-    try:
-        init_db()
-        print("✅ Banco de dados inicializado com sucesso!")
-    except Exception as e:
-        print(f"❌ Erro ao inicializar banco: {e}")
+# Flag para controlar inicialização do banco
+_db_initialized = False
+
+def ensure_db_initialized():
+    """Garantir que o banco está inicializado"""
+    global _db_initialized
+    if not _db_initialized:
+        try:
+            init_db()
+            _db_initialized = True
+            print("✅ Banco de dados inicializado com sucesso!")
+        except Exception as e:
+            print(f"❌ Erro ao inicializar banco: {e}")
+            # Continuar mesmo com erro
 
 
 @app.get("/", tags=["Sistema"])
@@ -73,6 +79,9 @@ async def root():
     """
     Página inicial da API
     """
+    # Inicializar banco na primeira requisição
+    ensure_db_initialized()
+    
     return {
         "message": "Pet Adoption API",
         "version": "1.0.0",
@@ -87,6 +96,9 @@ async def health_check():
     """
     Verificar se a API está funcionando
     """
+    # Inicializar banco na primeira requisição
+    ensure_db_initialized()
+    
     return {"status": "healthy", "timestamp": datetime.utcnow()}
 
 @app.get("/pets", response_model=List[PetResponse], tags=["Pets"])
