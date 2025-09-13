@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from app_types import GenderEnum, SpeciesEnum, StatusEnum
+from app_types import GenderEnum, SpeciesEnum, StatusEnum, AdoptionStatusEnum
 
 Base = declarative_base()
 
@@ -26,6 +26,7 @@ class Pet(Base):
     adopted_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     
     adopter = relationship("User", back_populates="adopted_pets")
+    adoption_requests = relationship("AdoptionRequest", back_populates="pet")
 
 class User(Base):
     __tablename__ = "users"
@@ -33,8 +34,27 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     full_name = Column(String(200), nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
+    password = Column(String(255), nullable=False)  # Senha hasheada
     phone = Column(String(20))
     city = Column(String(100))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     adopted_pets = relationship("Pet", back_populates="adopter")
+    adoption_requests = relationship("AdoptionRequest", back_populates="user")
+
+
+class AdoptionRequest(Base):
+    __tablename__ = "adoption_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    pet_id = Column(Integer, ForeignKey("pets.id"), nullable=False)
+    full_name = Column(String(200), nullable=False)
+    email = Column(String(255), nullable=False)
+    phone = Column(String(20))
+    status = Column(Enum(AdoptionStatusEnum), default=AdoptionStatusEnum.PENDING)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    user = relationship("User", back_populates="adoption_requests")
+    pet = relationship("Pet", back_populates="adoption_requests")
