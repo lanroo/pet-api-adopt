@@ -691,6 +691,23 @@ async def get_adoption_requests_count(
             "completed": completed
         }
 
+@app.delete("/users/{user_id}", tags=["Usuários"])
+async def delete_user(user_id: int, db: Session = Depends(get_db)):
+    """
+    Deletar usuário específico
+    """
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        
+        db.delete(user)
+        db.commit()
+        return {"message": f"Usuário {user.full_name} deletado com sucesso"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao deletar usuário: {str(e)}")
+
 
 if __name__ == "__main__":
     import uvicorn
