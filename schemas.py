@@ -5,7 +5,7 @@ from datetime import datetime
 from app_types import GenderEnum, SpeciesEnum, StatusEnum, AdoptionStatusEnum
 from app_types.constants import (
     MAX_NAME_LENGTH, MAX_BREED_LENGTH, MAX_CITY_LENGTH, 
-    MAX_DESCRIPTION_LENGTH, MAX_EMAIL_LENGTH, MAX_PHONE_LENGTH, 
+    MAX_DESCRIPTION_LENGTH, MAX_EMAIL_LENGTH, MAX_WHATSAPP_LENGTH, 
     MAX_FULL_NAME_LENGTH, MIN_AGE_MONTHS, MAX_AGE_MONTHS
 )
 
@@ -55,7 +55,7 @@ class PetFilter(BaseModel):
 class UserBase(BaseModel):
     full_name: str = Field(..., min_length=1, max_length=MAX_FULL_NAME_LENGTH)
     email: EmailStr = Field(..., max_length=MAX_EMAIL_LENGTH)
-    phone: Optional[str] = Field(None, max_length=MAX_PHONE_LENGTH)
+    whatsapp: Optional[str] = Field(None, max_length=MAX_WHATSAPP_LENGTH)
     city: Optional[str] = Field(None, max_length=MAX_CITY_LENGTH)
 
 class UserCreate(UserBase):
@@ -64,7 +64,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     full_name: Optional[str] = Field(None, min_length=1, max_length=MAX_FULL_NAME_LENGTH)
     email: Optional[EmailStr] = Field(None, max_length=MAX_EMAIL_LENGTH)
-    phone: Optional[str] = Field(None, max_length=MAX_PHONE_LENGTH)
+    whatsapp: Optional[str] = Field(None, max_length=MAX_WHATSAPP_LENGTH)
     city: Optional[str] = Field(None, max_length=MAX_CITY_LENGTH)
 
 class UserResponse(UserBase):
@@ -83,7 +83,7 @@ class UserRegister(BaseModel):
     full_name: str = Field(..., min_length=1, max_length=MAX_FULL_NAME_LENGTH)
     email: EmailStr = Field(..., max_length=MAX_EMAIL_LENGTH)
     password: str = Field(..., min_length=6, max_length=100)
-    phone: Optional[str] = Field(None, max_length=MAX_PHONE_LENGTH)
+    whatsapp: Optional[str] = Field(None, max_length=MAX_WHATSAPP_LENGTH)
     city: Optional[str] = Field(None, max_length=MAX_CITY_LENGTH)
 
 class Token(BaseModel):
@@ -97,7 +97,7 @@ class UserProfile(BaseModel):
     id: int
     full_name: str
     email: str
-    phone: Optional[str] = None
+    whatsapp: Optional[str] = None
     city: Optional[str] = None
     created_at: datetime
 
@@ -108,7 +108,7 @@ class UserProfile(BaseModel):
 class AdoptionRequestBase(BaseModel):
     full_name: str = Field(..., min_length=1, max_length=MAX_FULL_NAME_LENGTH)
     email: EmailStr = Field(..., max_length=MAX_EMAIL_LENGTH)
-    phone: Optional[str] = Field(None, max_length=MAX_PHONE_LENGTH)
+    whatsapp: Optional[str] = Field(None, max_length=MAX_WHATSAPP_LENGTH)
 
 class AdoptionRequestCreate(AdoptionRequestBase):
     user_id: Optional[int] = None
@@ -117,7 +117,7 @@ class AdoptionRequestCreate(AdoptionRequestBase):
 class AdoptionRequestUpdate(BaseModel):
     full_name: Optional[str] = Field(None, min_length=1, max_length=MAX_FULL_NAME_LENGTH)
     email: Optional[EmailStr] = Field(None, max_length=MAX_EMAIL_LENGTH)
-    phone: Optional[str] = Field(None, max_length=MAX_PHONE_LENGTH)
+    whatsapp: Optional[str] = Field(None, max_length=MAX_WHATSAPP_LENGTH)
     status: Optional[AdoptionStatusEnum] = None
 
 class PetInAdoption(BaseModel):

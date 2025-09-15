@@ -324,7 +324,19 @@ async def list_users(db: Session = Depends(get_db)):
     Listar todos os usuários
     """
     users = db.query(User).all()
-    return {"users": users}
+    # Transformar os dados para incluir o campo whatsapp
+    users_data = []
+    for user in users:
+        user_dict = {
+            "id": user.id,
+            "full_name": user.full_name,
+            "email": user.email,
+            "whatsapp": user.whatsapp,
+            "city": user.city,
+            "created_at": user.created_at
+        }
+        users_data.append(user_dict)
+    return {"users": users_data}
 
 @app.post("/users", status_code=201, tags=["Usuários"])
 async def create_user(user_data: UserCreate, db: Session = Depends(get_db)):
@@ -347,7 +359,17 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    return user
+    
+    # Transformar os dados para incluir o campo whatsapp
+    user_dict = {
+        "id": user.id,
+        "full_name": user.full_name,
+        "email": user.email,
+        "whatsapp": user.whatsapp,
+        "city": user.city,
+        "created_at": user.created_at
+    }
+    return user_dict
 
 @app.post("/pets/{pet_id}/photos", tags=["Pets"])
 async def upload_pet_photos(
@@ -454,7 +476,7 @@ async def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
         full_name=user_data.full_name,
         email=user_data.email,
         password=hashed_password,
-        phone=user_data.phone,
+        whatsapp=user_data.whatsapp,
         city=user_data.city
     )
     
@@ -550,7 +572,7 @@ async def login_user_legacy(username: str, password: str, db: Session = Depends(
             "id": user.id,
             "full_name": user.full_name,
             "email": user.email,
-            "phone": user.phone,
+            "whatsapp": user.whatsapp,
             "city": user.city
         }
     }

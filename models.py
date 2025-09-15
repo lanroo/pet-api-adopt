@@ -35,7 +35,7 @@ class User(Base):
     full_name = Column(String(200), nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
     password = Column(String(255), nullable=False)  # Senha hasheada
-    phone = Column(String(20))
+    whatsapp = Column(String(20))
     city = Column(String(100))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
@@ -51,7 +51,7 @@ class AdoptionRequest(Base):
     pet_id = Column(Integer, ForeignKey("pets.id"), nullable=False)
     full_name = Column(String(200), nullable=False)
     email = Column(String(255), nullable=False)
-    phone = Column(String(20))
+    whatsapp = Column(String(20))
     status = Column(Enum(AdoptionStatusEnum), default=AdoptionStatusEnum.PENDING)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

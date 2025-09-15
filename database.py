@@ -30,7 +30,7 @@ def init_db():
         user1 = User(
             full_name="João Silva",
             email="joao@email.com",
-            phone="11999999999",
+                   whatsapp="11999999999",
             city="São Paulo",
             password=get_password_hash("senha123")
         )
@@ -38,7 +38,7 @@ def init_db():
         user2 = User(
             full_name="Maria Santos",
             email="maria@email.com",
-            phone="21999999999",
+                   whatsapp="21999999999",
             city="Rio de Janeiro",
             password=get_password_hash("senha123")
         )
@@ -47,7 +47,7 @@ def init_db():
         admin_user = User(
             full_name="Admin",
             email="yladacz@gmail.com",
-            phone="11999999999",
+                   whatsapp="11999999999",
             city="São Paulo",
             password=get_password_hash("@Senha123")
         )
