@@ -111,7 +111,7 @@ class AdoptionRequestBase(BaseModel):
     phone: Optional[str] = Field(None, max_length=MAX_PHONE_LENGTH)
 
 class AdoptionRequestCreate(AdoptionRequestBase):
-    user_id: int
+    user_id: Optional[int] = None
     pet_id: int
 
 class AdoptionRequestUpdate(BaseModel):
