@@ -58,7 +58,6 @@ app.add_middleware(
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Flag para controlar inicialização do banco
 _db_initialized = False
 
 def ensure_db_initialized():
@@ -571,6 +570,126 @@ async def logout_user():
     Fazer logout (no JWT, o logout é feito no frontend removendo o token)
     """
     return {"message": "Logout realizado com sucesso. Remova o token do frontend."}
+
+# ============================================================================
+# ENDPOINTS DE ADOÇÃO
+# ============================================================================
+
+@app.post("/adoption-requests", response_model=AdoptionRequestResponse, tags=["Adoções"])
+async def create_adoption_request(
+    adoption_request: AdoptionRequestCreate,
+    db: Session = Depends(get_db)
+):
+    """
+    Criar novo pedido de adoção
+    """
+    try:
+        # Criar o pedido de adoção
+        db_adoption = AdoptionRequest(**adoption_request.dict())
+        db.add(db_adoption)
+        db.commit()
+        db.refresh(db_adoption)
+        
+        return db_adoption
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao criar pedido de adoção: {str(e)}")
+
+@app.get("/adoption-requests", response_model=List[AdoptionRequestResponse], tags=["Adoções"])
+async def get_adoption_requests(
+    skip: int = Query(0, ge=0, description="Número de registros para pular"),
+    limit: int = Query(100, ge=1, le=100, description="Número máximo de registros"),
+    status: Optional[AdoptionStatusEnum] = Query(None, description="Filtrar por status"),
+    db: Session = Depends(get_db)
+):
+    """
+    Listar todos os pedidos de adoção
+    """
+    query = db.query(AdoptionRequest)
+    
+    if status:
+        query = query.filter(AdoptionRequest.status == status)
+    
+    return query.offset(skip).limit(limit).all()
+
+@app.get("/adoption-requests/{adoption_id}", response_model=AdoptionRequestResponse, tags=["Adoções"])
+async def get_adoption_request(
+    adoption_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Buscar pedido de adoção específico
+    """
+    adoption = db.query(AdoptionRequest).filter(AdoptionRequest.id == adoption_id).first()
+    if not adoption:
+        raise HTTPException(status_code=404, detail="Pedido de adoção não encontrado")
+    return adoption
+
+@app.put("/adoption-requests/{adoption_id}", response_model=AdoptionRequestResponse, tags=["Adoções"])
+async def update_adoption_request(
+    adoption_id: int,
+    adoption_update: AdoptionRequestUpdate,
+    db: Session = Depends(get_db)
+):
+    """
+    Atualizar pedido de adoção
+    """
+    adoption = db.query(AdoptionRequest).filter(AdoptionRequest.id == adoption_id).first()
+    if not adoption:
+        raise HTTPException(status_code=404, detail="Pedido de adoção não encontrado")
+    
+    # Atualizar apenas os campos fornecidos
+    update_data = adoption_update.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(adoption, key, value)
+    
+    db.commit()
+    db.refresh(adoption)
+    return adoption
+
+@app.delete("/adoption-requests/{adoption_id}", tags=["Adoções"])
+async def delete_adoption_request(
+    adoption_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Deletar pedido de adoção
+    """
+    adoption = db.query(AdoptionRequest).filter(AdoptionRequest.id == adoption_id).first()
+    if not adoption:
+        raise HTTPException(status_code=404, detail="Pedido de adoção não encontrado")
+    
+    db.delete(adoption)
+    db.commit()
+    return {"message": "Pedido de adoção deletado com sucesso"}
+
+@app.get("/adoption-requests/count", tags=["Adoções"])
+async def get_adoption_requests_count(
+    status: Optional[AdoptionStatusEnum] = Query(None, description="Filtrar por status"),
+    db: Session = Depends(get_db)
+):
+    """
+    Contar pedidos de adoção
+    """
+    query = db.query(AdoptionRequest)
+    
+    if status:
+        total = query.filter(AdoptionRequest.status == status).count()
+        return {"count": total}
+    else:
+        total = query.count()
+        pending = query.filter(AdoptionRequest.status == AdoptionStatusEnum.PENDING).count()
+        approved = query.filter(AdoptionRequest.status == AdoptionStatusEnum.APPROVED).count()
+        rejected = query.filter(AdoptionRequest.status == AdoptionStatusEnum.REJECTED).count()
+        completed = query.filter(AdoptionRequest.status == AdoptionStatusEnum.COMPLETED).count()
+        
+        return {
+            "total": total,
+            "pending": pending,
+            "approved": approved,
+            "rejected": rejected,
+            "completed": completed
+        }
 
 
 if __name__ == "__main__":
